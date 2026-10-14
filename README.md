@@ -3,10 +3,10 @@
 A floating clipboard notepad for Windows. Press a hotkey, type or paste, and it's saved. Public notes are shared
 peer-to-peer with everyone running Jack the Clipper on the same network — no server, no accounts, no setup.
 
-<p align="center">
-  <img src="docs/dark-editor.png" width="49%" alt="Editor with live Markdown, dark theme">
-  <img src="docs/light-notes.png" width="49%" alt="Notes list, light theme">
-</p>
+| | Editor | Notes |
+| --- | --- | --- |
+| **Dark** | ![Editor with live Markdown, dark theme](docs/dark-editor.png) | ![Notes list, dark theme](docs/dark-notes.png) |
+| **Light** | ![Editor with live Markdown, light theme](docs/light-editor.png) | ![Notes list, light theme](docs/light-notes.png) |
 
 ## Features
 
@@ -17,7 +17,7 @@ peer-to-peer with everyone running Jack the Clipper on the same network — no s
 - **Live Markdown.** Headings, bold, italic, strikethrough, inline code and code blocks, bullet, numbered and
   checkbox lists, quotes, dividers and links are styled as you type. Notes stay plain Markdown underneath.
 - **History.** Every note saves automatically. Pinned notes stay forever and sit at the top; the rest vanish
-  30 days after their last edit.
+  30 days after their last edit. Each card's 🔥 counts down the days left, turning yellow under 15 and red under 5.
 - **Public or private.** Click the cloud to share a note. Public notes sync to every copy of the app on your
   network, and notes you've received travel with you to the next network you join.
 - **Copy a whole note** from the card, the `⋮` menu or a right-click.

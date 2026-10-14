@@ -427,7 +427,7 @@ public partial class MainWindow : Window
         head.Children.Add(new TextBlock { Text = title, FontSize = 16, FontWeight = FontWeights.SemiBold, TextTrimming = TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center });
 
         var badges = new StackPanel { Orientation = Orientation.Horizontal };
-        if (n.Pinned) badges.Children.Add(Glyph(IconPin, "Pinned"));
+        badges.Children.Add(n.Pinned ? Glyph(IconPin, "Pinned: never deleted") : Expiry(n));
         if (n.Public) badges.Children.Add(Glyph(IconCloud, "Public: shared with peers"));
         var foot = new DockPanel { Margin = new Thickness(0, 8, 0, 0) };
         DockPanel.SetDock(badges, Dock.Right);
@@ -466,6 +466,21 @@ public partial class MainWindow : Window
         card.MouseLeave += (_, _) => { card.SetResourceReference(Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush"); copy.Visibility = Visibility.Hidden; };
         card.MouseLeftButtonUp += (_, _) => Open(n);
         return card;
+    }
+
+    // Unpinned notes are deleted 30 days after their last edit: a flame and the days left, yellow under 15, red under 5.
+    static FrameworkElement Expiry(Note n)
+    {
+        var days = Math.Max(0, (int)Math.Ceiling((n.Updated + Store.Ttl - Store.Now()) / (double)Store.Day));
+        var label = days == 1 ? "1 day" : $"{days} days";
+        var flame = Themed(new TextBlock { Text = "\U0001F525", FontFamily = new FontFamily("Segoe UI Emoji"), FontSize = 12, VerticalAlignment = VerticalAlignment.Center },
+            days < 5 ? "SystemFillColorCriticalBrush" : days < 15 ? "SystemFillColorCautionBrush" : "TextFillColorTertiaryBrush");
+        var text = Themed(new TextBlock { Text = label, FontSize = 12, Margin = new Thickness(4, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center }, "TextFillColorTertiaryBrush");
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Margin = new Thickness(8, 0, 0, 0), ToolTip = $"Deleted in {label} unless it's edited or pinned",
+            Children = { flame, text },
+        };
     }
 
     BitmapSource? Thumb(Note n)
