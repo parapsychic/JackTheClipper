@@ -1,6 +1,8 @@
 bin/
 obj/
 publish/
+out/
+installer/Output/
 .vs/
 *.user
 *.zip

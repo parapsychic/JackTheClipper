@@ -42,19 +42,25 @@ public partial class MainWindow : Window
     record Snap(string Text, List<string> Images, int Caret);
 
     [STAThread]
-    static void Main()
+    static void Main(string[] args)
     {
         // One instance per session: launching it again just pops the running window.
-        using var signal = new EventWaitHandle(false, EventResetMode.AutoReset, "JackTheClipper.Show", out var first);
-        if (!first) { signal.Set(); return; }
+        // "--quit" (used by the installer) closes the running one cleanly instead, saving first.
+        using var show = new EventWaitHandle(false, EventResetMode.AutoReset, "JackTheClipper.Show", out var first);
+        using var quit = new EventWaitHandle(false, EventResetMode.AutoReset, "JackTheClipper.Quit");
+        if (args.Contains("--quit")) { if (!first) quit.Set(); return; }
+        if (!first) { show.Set(); return; }
         var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
 #pragma warning disable WPF0001 // the built-in Windows 11 (Fluent) theme is still flagged experimental
         app.ThemeMode = ThemeMode.System; // follows Windows light/dark mode
 #pragma warning restore WPF0001
         var win = new MainWindow();
-        ThreadPool.RegisterWaitForSingleObject(signal, (_, _) => win.Dispatcher.InvokeAsync(win.Reveal), null, -1, false);
+        ThreadPool.RegisterWaitForSingleObject(show, (_, _) => win.Dispatcher.InvokeAsync(win.Reveal), null, -1, false);
+        ThreadPool.RegisterWaitForSingleObject(quit, (_, _) => win.Dispatcher.InvokeAsync(win.Quit), null, -1, true);
         app.SessionEnding += (_, _) => win.SaveAll();
-        win.Reveal();
+        // "--background" (starting at sign-in) stays in the tray: hotkey and sharing are live, the window waits to be called.
+        if (args.Contains("--background")) new WindowInteropHelper(win).EnsureHandle();
+        else win.Reveal();
         app.Run();
     }
 

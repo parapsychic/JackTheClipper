@@ -36,18 +36,37 @@ peer-to-peer with everyone running Jack the Clipper on the same network — no s
 
 Right-click anywhere for the menu (Quit is always there).
 
-## Running it
+## Install
 
-Needs Windows 10 or 11 and the [.NET 10](https://dotnet.microsoft.com/download/dotnet/10.0) SDK to build
-(the Desktop Runtime is enough to run a published build).
+Download from [Releases](https://github.com/parapsychic/JackTheClipper/releases) (Windows 10 or 11, 64-bit; nothing
+else to install):
 
-```powershell
-dotnet run                                  # run from source
-dotnet publish -c Release -o publish        # then start publish\JackTheClipper.exe
-```
+- `JackTheClipper-<version>-setup.exe` installs for your account only (no admin prompt), adds a Start menu entry,
+  and can start the app in the tray when you sign in.
+- `JackTheClipper-<version>-portable.exe` runs from anywhere without installing.
+
+The builds aren't code-signed yet, so Windows SmartScreen may warn on first run: choose **More info → Run anyway**.
 
 On first launch Windows Firewall asks whether to allow network access. Allow it on **Private networks**, or other
 copies of the app won't be able to find yours.
+
+Your notes stay in `%APPDATA%\JackTheClipper` when you uninstall.
+
+## Building from source
+
+Needs the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
+
+```powershell
+dotnet run                                  # run from source
+dotnet run -- --background                  # start in the tray only, as the sign-in shortcut does
+```
+
+To make a release, push a version tag; GitHub Actions builds the installer and portable exe and publishes them:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## How sharing works
 
@@ -72,4 +91,6 @@ copies of the app won't be able to find yours.
 | `Markdown.cs` | Live Markdown styling, and plain text for note cards |
 | `MainWindow.xaml`, `MainWindow.xaml.cs` | The window, editor, undo, tray icon and hotkey |
 | `test/` | `dotnet run --project test`: two peers syncing over the real network, plus Markdown checks |
+| `installer/JackTheClipper.iss` | Inno Setup script for the Windows installer |
+| `.github/workflows/release.yml` | Builds the installer and portable exe; publishes them for `v*` tags |
 | `icon.svg` | Source of `app.ico` |
